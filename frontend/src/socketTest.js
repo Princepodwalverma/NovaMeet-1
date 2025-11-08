@@ -1,16 +1,18 @@
-import { io } from "socket.io-client";
+﻿import { io } from "socket.io-client";
 
 // backend ka URL daal (tera backend port 8000 pe chal raha hai)
-const socket = io("http://localhost:8000", {
+// backend ka URL daal (tera backend port 5000 pe chal raha hai)
+const socket = io(process.env.REACT_APP_SOCKET_URL || "http://localhost:5000", {
   transports: ["websocket"],
 });
 
+
 socket.on("connect", () => {
-  console.log("🟢 Connected to NovaMeet Socket Server:", socket.id);
+  console.log("ðŸŸ¢ Connected to NovaMeet Socket Server:", socket.id);
 });
 
 socket.on("disconnect", () => {
-  console.log("🔴 Disconnected from NovaMeet server");
+  console.log("ðŸ”´ Disconnected from NovaMeet server");
 });
 
 export default socket;
