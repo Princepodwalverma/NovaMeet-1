@@ -1,12 +1,4 @@
 ﻿services:
-  frontend:
-    build: ./frontend
-    container_name: novameet-frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
-
   backend:
     build: ./backend
     container_name: novameet-backend
@@ -14,3 +6,13 @@
       - "5000:5000"
     environment:
       - NODE_ENV=production
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: novameet-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always
