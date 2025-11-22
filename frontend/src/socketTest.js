@@ -1,4 +1,4 @@
-﻿// src/socketTest.js
+// src/socketTest.js
 import { io } from "socket.io-client";
 
 // Backend URL - development or production
