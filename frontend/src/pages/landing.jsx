@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../App.css";
 import { Link, useNavigate } from "react-router-dom";
-import Typed from "react-typed";
+import { ReactTyped } from "react-typed-text-effect";
 import ParticleBackground from "../components/ParticleBackground";
 
 export default function LandingPage() {
@@ -21,8 +21,6 @@ export default function LandingPage() {
     localStorage.removeItem("nova_user");
     localStorage.removeItem("token");
     setUser(null);
-
-    // clean redirect to login page
     router("/auth", { replace: true });
   };
 
@@ -89,6 +87,7 @@ export default function LandingPage() {
               >
                 Welcome, {user.name} 👋
               </p>
+
               <p
                 onClick={handleLogout}
                 style={{
@@ -96,7 +95,6 @@ export default function LandingPage() {
                   color: "#ff4d4d",
                   fontWeight: "700",
                   fontSize: "1.05rem",
-                  transition: "0.3s",
                 }}
               >
                 Logout
@@ -109,21 +107,21 @@ export default function LandingPage() {
                 style={{
                   cursor: "pointer",
                   color: "#ffffff",
-                  transition: "0.3s",
                 }}
               >
                 Join as Guest
               </p>
+
               <p
                 onClick={() => router("/auth")}
                 style={{
                   cursor: "pointer",
                   color: "#ffffff",
-                  transition: "0.3s",
                 }}
               >
                 Register
               </p>
+
               <div
                 onClick={() => router("/auth")}
                 role="button"
@@ -164,14 +162,14 @@ export default function LandingPage() {
               color: "#ffffff",
             }}
           >
-            <Typed
+            <ReactTyped
               strings={[
                 "Where Minds Meet.",
                 "Where Teams Sync.",
                 "Where Ideas Flow.",
               ]}
               typeSpeed={60}
-              backSpeed={30}
+              backSpeed={40}
               loop
             />
           </h1>
@@ -219,6 +217,7 @@ export default function LandingPage() {
             >
               Start a Sync
             </Link>
+
             <Link
               to="/guest"
               className="outline-btn"
