@@ -3,57 +3,64 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      agent { docker { image 'alpine/git:latest' } } // सिर्फ checkout के लिए हल्का image
+      agent { docker { image 'alpine/git:latest' } }
       steps {
-        // use checkout scm or explicit repo URL with credentialsId if private
         checkout scm
-        // OR, if repo is different, replace line above with:
-        // git branch: 'main', url: 'https://github.com/Princepodwalverma/NovaMeet-1.git', credentialsId: 'github-creds'
       }
     }
 
-    stage('Install & Build (Node)') {
-      agent { docker { image 'node:18' } } // node environment inside container
+    stage('Install Backend Dependencies') {
+      agent { docker { image 'node:18' } }
       steps {
-        sh 'node -v'
-        sh 'npm -v'
-        sh 'npm ci'   // npm ci is preferred for reproducible installs (if package-lock.json present)
-        sh 'npm run build'
+        dir('backend') {
+          sh 'node -v'
+          sh 'npm -v'
+          sh 'npm ci'
+        }
+      }
+    }
+
+    stage('Install & Build Frontend') {
+      agent { docker { image 'node:18' } }
+      steps {
+        dir('frontend') {
+          sh 'node -v'
+          sh 'npm -v'
+          sh 'npm install --legacy-peer-deps'   // ya npm ci agar lockfile present
+          sh 'CI=true npm run build'            // CI=true so react-scripts treats warnings as errors (optional)
+        }
       }
       post {
         always {
-          archiveArtifacts artifacts: 'build/**', fingerprint: true
+          archiveArtifacts artifacts: 'frontend/build/**', fingerprint: true
         }
       }
     }
 
-    stage('Docker Build') {
-      // This stage requires docker available on the agent. Use an agent that has docker installed.
-      agent { label 'docker' } // ensure you have an agent with docker (or use docker-in-docker setup)
-      steps {
-        script {
-          def imageTag = "myapp:${env.BUILD_NUMBER}"
-          // build docker image
-          sh "docker build -t ${imageTag} ."
-          // optional: push to registry (configure credentials / registry)
-          // withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          //   sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
-          //   sh "docker tag ${imageTag} myrepo/myapp:${env.BUILD_NUMBER}"
-          //   sh "docker push myrepo/myapp:${env.BUILD_NUMBER}"
-          // }
-        }
-      }
-    }
-
-    stage('Compose up (optional)') {
+    stage('Docker Compose Up') {
+      // ensure this node label points to a docker-capable agent (has docker daemon)
       agent { label 'docker' }
-      when {
-        expression { return fileExists('docker-compose.yml') }
-      }
       steps {
-        // use down then up to refresh containers
-        sh "docker-compose down || true"
-        sh "docker-compose up --build -d"
+        // run in workspace root where docker-compose.yml exists
+        dir("${env.WORKSPACE}") {
+          sh '''
+            echo "Checking docker/compose..."
+            docker --version || { echo "ERROR: docker not found on agent"; exit 125; }
+
+            if docker compose version >/dev/null 2>&1; then
+              echo "Using 'docker compose'"
+              docker compose down || true
+              docker compose up --build -d
+            elif command -v docker-compose >/dev/null 2>&1; then
+              echo "Using 'docker-compose' binary"
+              docker-compose down || true
+              docker-compose up --build -d
+            else
+              echo "ERROR: No compose available on agent. Install docker compose (v2) or docker-compose binary."
+              exit 125
+            fi
+          '''
+        }
       }
     }
   }
