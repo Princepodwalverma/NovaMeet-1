@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../App.css";
 import { Link, useNavigate } from "react-router-dom";
-import ReactTyped from "react-typed";
+import { Typed } from 'react-typed';
 import ParticleBackground from "../components/ParticleBackground";
 
 export default function LandingPage() {
@@ -162,12 +162,8 @@ export default function LandingPage() {
               color: "#ffffff",
             }}
           >
-            <ReactTyped
-              strings={["Welcome to NovaMeet", "Video Meeting App"]}
-              typeSpeed={40}
-              backSpeed={50}
-               loop
-            />
+            <Typed strings={["Hello"]} typeSpeed={50} />
+
 
 
           </h1>
