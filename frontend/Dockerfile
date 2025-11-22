@@ -1,24 +1,21 @@
-FROM node:20-alpine
+# Step 1: Base image
+FROM node:18-alpine
+
+# Step 2: Set working directory
 WORKDIR /app
 
-# Copy package files first
+# Step 3: Copy package files and install deps
 COPY package*.json ./
-
-# Install build dependencies
-RUN apk add --no-cache python3 make g++
-
-# Clear npm cache + install deps
-RUN npm cache clean --force
 RUN npm install --legacy-peer-deps
 
-# Copy rest of the project files
+# Step 4: Copy rest of the code
 COPY . .
 
-# Build your app
+# Step 5: Build React app
 RUN npm run build
 
-# Expose the port used by React (default 3000)
-EXPOSE 3000
-
-# Start the app
-CMD ["npm", "start"]
+# Step 6: Serve with nginx
+FROM nginx:stable-alpine
+COPY --from=0 /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

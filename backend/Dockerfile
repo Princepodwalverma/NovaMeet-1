@@ -1,9 +1,11 @@
-# backend/Dockerfile
 FROM node:18-alpine
-WORKDIR /usr/src/app
-ENV NODE_ENV=production
+
+WORKDIR /app
+
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install --legacy-peer-deps
+
 COPY . .
+
 EXPOSE 5000
-CMD ["node", "src/app.js"]
+CMD ["npm", "start"]

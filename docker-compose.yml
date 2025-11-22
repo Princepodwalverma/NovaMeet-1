@@ -1,23 +1,16 @@
-﻿version: "3.8"
-services:
-  backend:
-    build: ./backend
-    env_file:
-      - ./.env  # on server, .env will be created with real secrets (not in git)
-    ports:
-      - "5000:5000"
-    container_name: novameet_backend
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
+﻿services:
   frontend:
     build: ./frontend
+    container_name: novameet-frontend
     ports:
-      - "3000:80"   # if built and served via nginx (adjust as needed)
-    restart: unless-stopped
+      - "3000:80"
     depends_on:
       - backend
+
+  backend:
+    build: ./backend
+    container_name: novameet-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
