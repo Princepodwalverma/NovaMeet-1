@@ -1,10 +1,7 @@
-// ✅ Fix for Simple-Peer (WebRTC polyfills)
-import { Buffer } from "buffer";
-import process from "process";
-
-if (typeof global === "undefined") {
-  window.global = window;
+// Safe process polyfill (SimplePeer fix)
+if (typeof window.process === "undefined") {
+  window.process = {
+    env: { NODE_ENV: "development" },
+    nextTick: (cb) => setTimeout(cb, 0),
+  };
 }
-
-window.Buffer = Buffer;
-window.process = process;
