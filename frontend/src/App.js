@@ -1,4 +1,3 @@
-// src/App.js
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/landing";
@@ -6,7 +5,7 @@ import Authentication from "./pages/authentication";
 import VideoMeetComponent from "./pages/VideoMeet";
 import HomeComponent from "./pages/home";
 import History from "./pages/history";
-import Guest from "./pages/guest"; // ✅ added import
+import Guest from "./pages/guest";
 
 function App() {
   return (
@@ -17,7 +16,8 @@ function App() {
         <Route path="/home" element={<HomeComponent />} />
         <Route path="/history" element={<History />} />
         <Route path="/meet/:roomId" element={<VideoMeetComponent />} />
-        <Route path="/guest" element={<Guest />} /> {/* ✅ new route */}
+        <Route path="/guest" element={<Guest />} />
+        <Route path="*" element={<div>404 Page Not Found</div>} />
       </Routes>
     </div>
   );
